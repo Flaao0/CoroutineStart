@@ -13,9 +13,10 @@ import kotlin.concurrent.thread
 class MainActivity : AppCompatActivity() {
 
     private var _binding: ActivityMainBinding? = null
-    private val binding: ActivityMainBinding get() = _binding ?: throw RuntimeException(
-        "123"
-    )
+    private val binding: ActivityMainBinding
+        get() = _binding ?: throw RuntimeException(
+            "123"
+        )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,19 +49,28 @@ class MainActivity : AppCompatActivity() {
     private fun loadCity(callback: (String) -> Unit) {
         thread {
             Thread.sleep(5000)
+            runOnUiThread {
                 callback("Moscow")
+            }
+
         }
     }
 
     private fun loadTemperature(city: String, callback: (Int) -> Unit) {
         thread {
+            runOnUiThread {
                 Toast.makeText(
                     this,
                     getString(R.string.loading_temperature_toast, city),
                     Toast.LENGTH_SHORT
                 ).show()
+            }
+
             Thread.sleep(5000)
+            runOnUiThread {
                 callback(17)
+            }
+
         }
     }
 }
