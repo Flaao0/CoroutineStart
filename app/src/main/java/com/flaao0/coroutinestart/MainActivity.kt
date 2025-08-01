@@ -11,6 +11,11 @@ import com.flaao0.coroutinestart.databinding.ActivityMainBinding
 import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
+
+    private val binding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -21,10 +26,6 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         loadData()
-    }
-
-    private val binding by lazy {
-        ActivityMainBinding.inflate(layoutInflater)
     }
 
     private fun loadData() {
