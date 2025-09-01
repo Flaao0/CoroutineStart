@@ -1,18 +1,12 @@
 package com.flaao0.coroutinestart
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.isVisible
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.ViewModelProvider
 import com.flaao0.coroutinestart.databinding.ActivityMainBinding
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,6 +15,10 @@ class MainActivity : AppCompatActivity() {
         get() = _binding ?: throw RuntimeException(
             "123"
         )
+
+    private val viewModel by lazy {
+        ViewModelProvider(this)[MainViewModel::class]
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,44 +30,7 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        binding.buttonLoad.setOnClickListener {
-            binding.progress.isVisible = true
-            binding.buttonLoad.isEnabled = false
-            val deferredCity: Deferred<String> = lifecycleScope.async {
-               loadCity()
-            }
-
-            val deferredTemp: Deferred<Int> = lifecycleScope.async {
-                loadTemperature()
-            }
-
-            lifecycleScope.launch {
-                val city = deferredCity.await()
-                val temp = deferredTemp.await()
-                binding.tvLocation.text = city
-                binding.tvTemperature.text = temp.toString()
-                Toast.makeText(
-                    this@MainActivity,
-                    "City: $city, Temp: $temp",
-                    Toast.LENGTH_SHORT
-                ).show()
-                binding.progress.isVisible = false
-                binding.buttonLoad.isEnabled = true
-            }
-        }
+        viewModel.method()
     }
 
-    private suspend fun loadData() {
-    }
-
-    private suspend fun loadCity(): String {
-        delay(5000)
-        return "Moscow"
-
-    }
-
-    private suspend fun loadTemperature(): Int {
-        delay(5000)
-        return 17
-    }
 }
