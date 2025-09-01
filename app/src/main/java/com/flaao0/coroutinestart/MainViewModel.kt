@@ -2,6 +2,7 @@ package com.flaao0.coroutinestart
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -9,11 +10,14 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MainViewModel: ViewModel() {
+class MainViewModel : ViewModel() {
 
     private val parentJob = Job()
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        Log.d(LOG_TAG, "Exception caught: $throwable")
 
-    private val coroutineScope = CoroutineScope(Dispatchers.Main + parentJob)
+    }
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + parentJob + exceptionHandler)
 
     fun method() {
         val childjob1 = coroutineScope.launch {
@@ -24,9 +28,16 @@ class MainViewModel: ViewModel() {
             delay(2000)
             Log.d(LOG_TAG, "second coroutine finished")
         }
+        val childjob3 = coroutineScope.launch {
+            delay(1000)
+            error()
+            Log.d(LOG_TAG, "third coroutine finished")
+        }
 
-        Log.d(LOG_TAG, parentJob.children.contains(childjob1).toString())
-        Log.d(LOG_TAG, parentJob.children.contains(childjob2).toString())
+    }
+
+    private fun error() {
+        throw RuntimeException()
     }
 
     override fun onCleared() {
